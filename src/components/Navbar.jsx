@@ -1,11 +1,22 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, NavLink } from "react-router";
-// import { useContext } from "react";
-// import { AuthContext } from "../context/AuthContext";
 import { FaUtensils } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
+import { AuthContext } from "../contexts/AuthContext";
 
 const Navbar = () => {
+  const {user, logOutUser} = useContext(AuthContext);
+
+  const handleLogout = () => {
+    logOutUser()
+      .then(result => {
+        console.log(result.user)
+      })
+      .catch(error => {
+        console.log(error.message)
+      })
+  }
+
   const navLinks = (
     <nav className="flex justify-center items-center">
       <li>
@@ -30,7 +41,7 @@ const Navbar = () => {
       </li>
 
       {/* 🔒 Private Links for Logged-in Users */}
-      {/* {user && ( */}
+      {user && (
         <>
           <li>
             <NavLink
@@ -69,12 +80,12 @@ const Navbar = () => {
             </NavLink>
           </li>
         </>
-      {/* )} */}
+       )} 
     </nav>
   );
 
   return (
-    <div className="bg-white shadow-md sticky top-0 z-50">
+    <div className="bg-white shadow-md sticky top-0 z-50 flex items-center">
       <div className="navbar container mx-auto px-4">
         {/* 🥗 Left: Logo & Brand Name */}
         <div className="flex-1">
@@ -120,19 +131,19 @@ const Navbar = () => {
 
         {/* 👤 Right: Auth Buttons or Profile */}
         <div className="navbar-end">
-          {/* {!user ? ( */}
+          {!user ? (
             <Link
               to="/login"
               className="btn bg-[#16a34a] hover:bg-[#15803d] text-white"
             >
               Login
             </Link>
-          {/* ) : ( */}
+           ) : ( 
             <div className="dropdown dropdown-end">
               <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                 <div className="w-10 rounded-full">
                   <img
-                    // src={user.photoURL || "/default-user.png"}
+                    src={user.photoURL || "/default-user.png"}
                     alt="user"
                     referrerPolicy="no-referrer"
                   />
@@ -143,11 +154,11 @@ const Navbar = () => {
                 className="mt-3 p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
               >
                 <li className="text-center font-semibold text-gray-700">
-                  {/* {user.displayName || "Anonymous User"} */}
+                  {user.displayName || "Anonymous User"}
                 </li>
                 <li>
                   <button
-                    // onClick={handleLogout}
+                    onClick={handleLogout}
                     className="flex items-center gap-2 text-red-500 hover:text-red-600"
                   >
                     <FiLogOut /> Logout
@@ -155,7 +166,7 @@ const Navbar = () => {
                 </li>
               </ul>
             </div>
-          {/* )} */}
+           )} 
         </div>
       </div>
     </div>

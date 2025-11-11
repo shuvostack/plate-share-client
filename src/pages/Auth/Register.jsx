@@ -1,17 +1,81 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
+import { Link, useNavigate } from "react-router";
+import { FaUtensils, FaGoogle } from "react-icons/fa";
+import { sendEmailVerification, signOut } from "firebase/auth";
+import { auth } from "../../firebase/firebase.init";
+import Swal from "sweetalert2";
 
 const Register = () => {
-    const {createUser, signInWithGoogle} = useContext(AuthContext);
+  const { createUser, signInWithGoogle, setUser} = useContext(AuthContext);
+  const [nameError, setNameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const navigate = useNavigate();
 
-    const handleGoogleSignIn = () => {
-        signInWithGoogle()
-            .then(result => {
-                
-            })
-            .catch()
+  const handleRegister = (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+    const name = form.name.value.trim();
+    const photo = form.photo.value;
+    const email = form.email.value;
+    const password = form.password.value;
+
+    if (name.length < 5) {
+      setNameError("Name should be more than 5 characters");
+      return;
+    } else {
+      setNameError("");
     }
 
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+    if (passwordRegex.test(password)) {
+      setPasswordError(
+        "Password must contain at least 1 uppercase, 1 lowercase letter and be 6+ characters long"
+      );
+      return;
+    } else {
+      setPasswordError("");
+    }
+
+    createUser(email, password, name, photo).then((result) => {
+      const user = result.user;
+
+      sendEmailVerification(user)
+        .then(() => {
+            Swal.fire({
+            title: "Verify your email 📩",
+            text: "A verification link has been sent to your email. Please verify before login.",
+            icon: "info",
+            confirmButtonColor: "#16a34a",
+        });
+
+        signOut(auth);
+        navigate("/login");
+      })
+       .catch((error) => {
+          console.log(error);
+          setUser(user);
+        });
+    })
+    .catch(error => {
+        Swal.fire({
+        icon: "error",
+        title: "Registration Failed",
+        text: error.message,
+      });
+    }) 
+  };
+
+  const handleGoogleSignIn = () => {
+    signInWithGoogle()
+      .then((result) => {
+        console.log(result.user);
+      })
+      .catch((error) => {
+        console.log(error.code);
+      });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -36,13 +100,13 @@ const Register = () => {
             <input
               name="name"
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
               required
               placeholder="Your name"
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#16a34a]"
             />
           </div>
+
+           {nameError && <p className="text-red-500 text-sm text-center">{nameError}</p>}
 
           <div>
             <label className="block text-gray-700 font-medium mb-1">
@@ -51,10 +115,8 @@ const Register = () => {
             <input
               name="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="you@example.com"
+              placeholder="your email"
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#16a34a]"
             />
           </div>
@@ -66,9 +128,7 @@ const Register = () => {
             <input
               name="photo"
               type="text"
-              value={photoURL}
-              onChange={(e) => setPhotoURL(e.target.value)}
-              placeholder="https://example.com/photo.jpg"
+              placeholder="your photoURL"
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#16a34a]"
             />
           </div>
@@ -80,15 +140,13 @@ const Register = () => {
             <input
               name="password"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="••••••••"
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#16a34a]"
             />
           </div>
 
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          {passwordError && <p className="text-red-500 text-sm text-center">{passwordError}</p>}
 
           <button
             type="submit"

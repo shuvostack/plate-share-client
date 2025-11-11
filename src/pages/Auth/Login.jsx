@@ -1,30 +1,60 @@
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
-// import { useLocation, useNavigate } from "react-router";
+import Swal from "sweetalert2";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase/firebase.init";
+import { Link, useLocation, useNavigate } from "react-router";
+import { FaUtensils } from "react-icons/fa";
 
 const Login = () => {
-    const {signInUser, setUser} = useContext(AuthContext);
-    const [error, setError] = useState("");
+  const { signInUser,  } = useContext(AuthContext);
+  const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    
-//   const location = useLocation();
-//   const navigate = useNavigate();
+    const location = useLocation();
+    const navigate = useNavigate();
 
-    const handleLogin = (e) => {
-        e.preventDefault();
-        
-        const form = e.target;
-        const email = form.email.value;
-        const password = form.password.value;
+  const handleLogin = (e) => {
+    e.preventDefault();
 
-        signInUser(email, password)
-            .then(result => {
-                const user = result.user;
-            })
-            .catch(error => {
-                console.log(error.message)
-            })
-    }
+    const form = e.target;
+    const email = form.email.value;
+    const password = form.password.value;
+    console.log(email, password)
+
+    signInUser(email, password)
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+
+        if (!user.emailVerified) {
+          Swal.fire({
+            title: "Email not verified❌",
+            text: "Please verify your email before login",
+            icon: "warning",
+          });
+          signOut(auth);
+          return;
+        } else {
+          Swal.fire({
+            title: "Login successful",
+            icon: "success",
+            draggable: true,
+          });
+        }
+        navigate(`${location.state ? location.state : "/"}`);
+      })
+      .catch((error) => {
+        console.log(error.code);
+        setError(error.code);
+        Swal.fire({
+          icon: "error",
+          title: "Login failed",
+          text: "Check email and password",
+        });
+      });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

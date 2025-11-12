@@ -7,7 +7,7 @@ import { auth } from "../../firebase/firebase.init";
 import Swal from "sweetalert2";
 
 const Register = () => {
-  const { createUser, signInWithGoogle, setUser} = useContext(AuthContext);
+  const { createUser, signInWithGoogle, setUser } = useContext(AuthContext);
   const [nameError, setNameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
@@ -38,42 +38,58 @@ const Register = () => {
       setPasswordError("");
     }
 
-    createUser(email, password, name, photo).then((result) => {
-      const user = result.user;
+    createUser(email, password, name, photo)
+      .then((result) => {
+        const user = result.user;
 
-      sendEmailVerification(user)
-        .then(() => {
+        sendEmailVerification(user)
+          .then(() => {
             Swal.fire({
-            title: "Verify your email 📩",
-            text: "A verification link has been sent to your email. Please verify before login.",
-            icon: "info",
-            confirmButtonColor: "#16a34a",
-        });
+              title: "Verify your email 📩",
+              text: "A verification link has been sent to your email. Please verify before login.",
+              icon: "info",
+              confirmButtonColor: "#16a34a",
+            });
 
-        signOut(auth);
-        navigate("/login");
+            signOut(auth);
+            navigate("/login");
+          })
+          .catch((error) => {
+            console.log(error);
+            setUser(user);
+          });
       })
-       .catch((error) => {
-          console.log(error);
-          setUser(user);
-        });
-    })
-    .catch(error => {
+      .catch((error) => {
         Swal.fire({
-        icon: "error",
-        title: "Registration Failed",
-        text: error.message,
+          icon: "error",
+          title: "Registration Failed",
+          text: error.message,
+        });
       });
-    }) 
   };
 
   const handleGoogleSignIn = () => {
     signInWithGoogle()
       .then((result) => {
         console.log(result.user);
+
+        // create user in the database
+
+        Swal.fire({
+          title: "Logged in with Google!",
+          icon: "success",
+          draggable: false,
+        });
+        navigate("/");
       })
       .catch((error) => {
         console.log(error.code);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+          footer: '<a href="#">Why do I have this issue?</a>',
+        });
       });
   };
 
@@ -106,7 +122,9 @@ const Register = () => {
             />
           </div>
 
-           {nameError && <p className="text-red-500 text-sm text-center">{nameError}</p>}
+          {nameError && (
+            <p className="text-red-500 text-sm text-center">{nameError}</p>
+          )}
 
           <div>
             <label className="block text-gray-700 font-medium mb-1">
@@ -146,7 +164,9 @@ const Register = () => {
             />
           </div>
 
-          {passwordError && <p className="text-red-500 text-sm text-center">{passwordError}</p>}
+          {passwordError && (
+            <p className="text-red-500 text-sm text-center">{passwordError}</p>
+          )}
 
           <button
             type="submit"

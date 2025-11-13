@@ -2,7 +2,10 @@ import React from "react";
 import { Link } from "react-router";
 import { CalendarDays, MapPin, User } from "lucide-react";
 
-const FoodCard = () => {
+const FoodCard = ({food}) => {
+
+  const {food_image, food_name, additional_notes, pickup_location, expire_date, donator_image, donator_name, food_status, food_quantity, _id} = food
+
   return (
     <div className="card bg-base-100 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-gray-200 rounded-2xl">
       <figure className="h-56 overflow-hidden">
@@ -64,7 +67,7 @@ const FoodCard = () => {
 
           {/* 🍽️ View Details Button */}
           <Link to={`/foods/${_id}`}>
-            <button className="btn btn-outline btn-primary btn-sm">
+            <button className="btn bg-[#16a34a] hover:bg-[#076128ff] text-white btn-sm ">
               View Details
             </button>
           </Link>

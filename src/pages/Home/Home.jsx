@@ -4,6 +4,8 @@ import { AuthContext } from "../../contexts/AuthContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { Link } from "react-router";
 import Banner from "./Banner";
+import HowItWorks from "./StaticSections/HowItWorks";
+import OurMission from "./StaticSections/OurMission";
 
 const featuredFoodsPromise = fetch("http://localhost:3000/featured-foods").then(
   (res) => res.json()
@@ -21,8 +23,9 @@ const Home = () => {
       {/* hero section */}
       <Banner></Banner>
 
+      {/* featured section */}
       <section className="my-10">
-        <h3 className="text-center text-2xl font-bold">
+        <h3 className="text-center text-4xl mb-4 font-bold">
           <span className="text-[#16a34a]">Featured</span> Foods
         </h3>
         <div className="p-5">
@@ -36,6 +39,16 @@ const Home = () => {
           </Link>
         </div>
       </section>
+
+      {/* how it works section */}
+      <div>
+        <HowItWorks></HowItWorks>
+      </div>
+
+      {/* Our mission */}
+      <div className="my-5">
+        <OurMission></OurMission>
+      </div>
     </div>
   );
 };

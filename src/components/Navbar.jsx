@@ -40,7 +40,6 @@ const Navbar = () => {
         </NavLink>
       </li>
 
-      {/* 🔒 Private Links for Logged-in Users */}
       {user && (
         <>
           <li>
@@ -87,7 +86,6 @@ const Navbar = () => {
   return (
     <div className="bg-white shadow-md sticky top-0 z-50 flex items-center">
       <div className="navbar container mx-auto px-4">
-        {/* 🥗 Left: Logo & Brand Name */}
         <div className="flex-1">
           <Link
             to="/"
@@ -98,7 +96,6 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* 📱 Mobile Dropdown */}
         <div className="dropdown lg:hidden">
           <label tabIndex={0} className="btn btn-ghost">
             <svg
@@ -124,12 +121,10 @@ const Navbar = () => {
           </ul>
         </div>
 
-        {/* 🖥️ Desktop Menu */}
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1 flex gap-4">{navLinks}</ul>
         </div>
 
-        {/* 👤 Right: Auth Buttons or Profile */}
         <div className="navbar-end">
           {!user ? (
             <Link
@@ -153,9 +148,18 @@ const Navbar = () => {
                 tabIndex={0}
                 className="mt-3 p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
               >
-                <li className="text-center font-semibold text-gray-700">
+                <li className="text-center font-bold text-gray-700">
                   {user.displayName || "Anonymous User"}
                 </li>
+                <Link to="/add-food" className="font-semibold text-[#16a34a] hover:underline">
+                  Add Food
+                </Link>
+                <Link to="/add-food" className="font-semibold text-[#16a34a] hover:underline">
+                  Manage My Foods
+                </Link>
+                <Link to="/add-food" className="font-semibold text-[#16a34a] hover:underline">
+                  My Food Request
+                </Link>
                 <li>
                   <button
                     onClick={handleLogout}

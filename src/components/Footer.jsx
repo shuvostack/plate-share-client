@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router";
-import { FaUtensils } from "react-icons/fa";
+import { FaFacebookSquare, FaInstagramSquare, FaUtensils } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 const Footer = () => {
   return (
@@ -82,21 +83,21 @@ const Footer = () => {
 
         {/* Legal */}
         <nav>
-          <h6 className="text-lg font-semibold mb-3 text-[#5BC0BE]">Legal</h6>
+          <h6 className="text-lg font-semibold mb-3 text-[#5BC0BE]">Join Us</h6>
           <ul className="space-y-2">
             <li>
               <Link className="hover:text-[#5BC0BE] transition-colors">
-                Terms of Use
+                <FaFacebookSquare />
               </Link>
             </li>
             <li>
               <Link className="hover:text-[#5BC0BE] transition-colors">
-                Privacy Policy
+                <FaInstagramSquare />
               </Link>
             </li>
             <li>
               <Link className="hover:text-[#5BC0BE] transition-colors">
-                Cookie Policy
+                <FaXTwitter />
               </Link>
             </li>
           </ul>

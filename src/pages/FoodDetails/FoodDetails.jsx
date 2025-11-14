@@ -167,7 +167,7 @@ const FoodDetails = () => {
       `,
         }}
       >
-        {/* 🍱 Left Side Image */}
+        
         <figure className="lg:w-1/2 h-96">
           <img
             src={food_image}
@@ -176,7 +176,6 @@ const FoodDetails = () => {
           />
         </figure>
 
-        {/* 🧾 Right Side Details */}
         <div className="card-body lg:w-1/2 space-y-4">
           <h2 className="text-3xl font-bold text-[#16a34a]">{food_name}</h2>
 
@@ -211,7 +210,6 @@ const FoodDetails = () => {
             </p>
           </div>
 
-          {/* 👤 Donator Info */}
           <div className="divider"></div>
           <div className="flex items-center gap-3">
             <img
@@ -227,7 +225,6 @@ const FoodDetails = () => {
             </div>
           </div>
 
-          {/* 🍽️ Request Button */}
           <div className="mt-6">
             <button
               className="btn bg-[#16a34a] text-white w-full"
@@ -242,7 +239,6 @@ const FoodDetails = () => {
         </div>
       </div>
 
-      {/* 🔙 Back Button */}
       <div className="text-center mt-6">
         <button
           onClick={() => navigate(-1)}
@@ -252,7 +248,6 @@ const FoodDetails = () => {
         </button>
       </div>
 
-      {/* 🔵 Request Modal */}
       {modal && (
         <dialog open className="modal">
           <div className="modal-box">

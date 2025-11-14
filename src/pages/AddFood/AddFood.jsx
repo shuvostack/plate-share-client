@@ -12,7 +12,7 @@ const AddFood = () => {
   const imageHostingKey = import.meta.env.VITE_IMGBB_API_KEY;
   const imageHostingUrl = `https://api.imgbb.com/1/upload?key=${imageHostingKey}`;
 
-  // ✅ Redirect if not logged in
+  
   useEffect(() => {
     if (!user) {
       navigate("/login");
@@ -36,7 +36,7 @@ const AddFood = () => {
     const imageFile = form.food_image.files[0];
 
     try {
-      // 🖼️ Upload image to imgbb
+      
       const formData = new FormData();
       formData.append("image", imageFile);
 
@@ -53,7 +53,7 @@ const AddFood = () => {
 
       const food_image = uploadData.data.display_url;
 
-      // 🍱 Prepare new food object
+      
       const newFood = {
         food_name,
         food_image,
@@ -67,7 +67,7 @@ const AddFood = () => {
         food_status: "Available",
       };
       console.log(newFood)
-      // 🚀 Save to database
+      
       const response = await fetch("http://localhost:3000/foods", {
         method: "POST",
         headers: {
@@ -200,7 +200,6 @@ const AddFood = () => {
             </div>
           </div>
 
-          {/* Submit */}
           <div className="pt-5">
             <button
               type="submit"

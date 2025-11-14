@@ -3,17 +3,16 @@ import { useNavigate, useParams } from "react-router";
 import { AuthContext } from "../../contexts/AuthContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { CalendarDays, MapPin, PackageOpen, UserRound } from "lucide-react";
+import Swal from "sweetalert2";
 
 const FoodDetails = () => {
-  const { loading } = useContext(AuthContext);
-
-  // ✅ useParams থেকে id destructure করো
+  const { user, loading } = useContext(AuthContext);
   const { id } = useParams();
   const navigate = useNavigate();
   const [food, setFood] = useState(null);
   const [dataLoading, setDataLoading] = useState(true);
+  const [modal, setModal] = useState(false);
 
-  // ✅ fetch ঠিকভাবে call করা
   useEffect(() => {
     fetch(`http://localhost:3000/foods/${id}`)
       .then((res) => res.json())
@@ -27,12 +26,10 @@ const FoodDetails = () => {
       });
   }, [id]);
 
-  // ✅ যদি loading চলে তাহলে spinner দেখাও
   if (loading || dataLoading) {
     return <LoadingSpinner />;
   }
 
-  // ✅ food null হলে handle করো
   if (!food) {
     return (
       <div className="flex flex-col items-center justify-center h-[70vh]">
@@ -47,7 +44,6 @@ const FoodDetails = () => {
     );
   }
 
-  // ✅ এখন destructure করা safe
   const {
     food_name,
     food_image,
@@ -60,6 +56,98 @@ const FoodDetails = () => {
     donator_image,
     food_status,
   } = food;
+
+  const handleFoodRequest = () => {
+    if (!user) {
+      return navigate("/login");
+    }
+
+    if (user.email === donator_email) {
+      return Swal.fire({
+        icon: "error",
+        title: "You cannot request your own food!",
+      });
+    }
+
+    const requestData = {
+      foodId: id,
+      food_name,
+      food_image,
+      donator_name,
+      donator_email,
+      requesterEmail: user.email,
+      requesterName: user.displayName,
+      requesterImage: user.photoURL,
+      pickup_location,
+      expire_date,
+      status: "pending",
+    };
+
+    fetch("http://localhost:3000/requests", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.insertedId) {
+          Swal.fire({
+            icon: "success",
+            title: "Request Sent!",
+          });
+        }
+      })
+      .catch(() => {
+        Swal.fire({
+          icon: "error",
+          title: "Failed to send request!",
+        });
+      });
+  };
+
+  const handleRequestSubmit = (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+
+    const requestData = {
+      foodId: id,
+      food_name,
+      food_image,
+      pickup_location,
+      expire_date,
+      requesterEmail: user.email,
+      requesterName: user.displayName,
+      requestPhoto: user.photoURL,
+      donator_email,
+      donator_name,
+      donator_image,
+      contactNumber: form.contact.value,
+      whyNeed: form.why.value,
+      status: "pending",
+    };
+
+    fetch("http://localhost:3000/requests", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.insertedId) {
+          Swal.fire(
+            "Request Sent!",
+            "Your request is pending approval.",
+            "success"
+          );
+          setModal(false);
+        }
+      });
+  };
 
   return (
     <div className="container w-11/12 mx-auto px-4 py-10">
@@ -143,7 +231,7 @@ const FoodDetails = () => {
           <div className="mt-6">
             <button
               className="btn bg-[#16a34a] text-white w-full"
-              onClick={() => alert("Feature coming soon!")}
+              onClick={() => setModal(true)}
               disabled={food_status !== "Available"}
             >
               {food_status === "Available"
@@ -163,6 +251,57 @@ const FoodDetails = () => {
           ← Go Back
         </button>
       </div>
+
+      {/* 🔵 Request Modal */}
+      {modal && (
+        <dialog open className="modal">
+          <div className="modal-box">
+            <h3 className="text-xl text-[#16a34a] font-bold mb-3">Request This Food</h3>
+
+            <form onSubmit={handleRequestSubmit} className="space-y-4">
+              <div>
+                <label className="font-semibold">Write Location</label>
+                <input
+                  type="text"
+                  name="location"
+                  className="input input-bordered w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="font-semibold">Why Need Food</label>
+                <textarea
+                  name="why"
+                  rows="3"
+                  className="textarea textarea-bordered w-full"
+                  required
+                ></textarea>
+              </div>
+
+              <div>
+                <label className="font-semibold">Contact Number</label>
+                <input
+                  type="text"
+                  name="contact"
+                  className="input input-bordered w-full"
+                  required
+                />
+              </div>
+
+              <a onClick={handleFoodRequest} className="btn  bg-[#16a34a] hover:bg-[#076128ff] text-white w-full mt-3">
+                Submit Request
+              </a>
+            </form>
+
+            <div className="modal-action">
+              <button className="btn bg-red-500 text-white" onClick={() => setModal(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </dialog>
+      )}
     </div>
   );
 };

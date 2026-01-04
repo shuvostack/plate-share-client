@@ -19,16 +19,18 @@ const Home = () => {
   }
 
   return (
-    <div className="w-11/12 mx-auto">
+    <div className="">
       {/* hero section */}
-      <Banner></Banner>
+      <div>
+        <Banner></Banner>
+      </div>
 
       {/* featured section */}
       <section className="my-10">
         <h3 className="text-center text-4xl mb-4 font-bold">
           <span className="text-[#16a34a]">Featured</span> Foods
         </h3>
-        <div className="p-5">
+        <div className="p-5 w-11/12 mx-auto">
           <FeaturedFoods
             featuredFoodsPromise={featuredFoodsPromise}
           ></FeaturedFoods>
@@ -41,12 +43,12 @@ const Home = () => {
       </section>
 
       {/* how it works section */}
-      <div>
+      <div className="w-11/12 mx-auto">
         <HowItWorks></HowItWorks>
       </div>
 
       {/* Our mission */}
-      <div className="my-5">
+      <div className="my-5 w-11/12 mx-auto">
         <OurMission></OurMission>
       </div>
     </div>

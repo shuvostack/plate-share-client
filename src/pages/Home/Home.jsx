@@ -26,19 +26,11 @@ const Home = () => {
       </div>
 
       {/* featured section */}
-      <section className="my-10">
-        <h3 className="text-center text-4xl mb-4 font-bold">
-          <span className="text-[#16a34a]">Featured</span> Foods
-        </h3>
+      <section className="">
         <div className="p-5 w-11/12 mx-auto">
           <FeaturedFoods
             featuredFoodsPromise={featuredFoodsPromise}
           ></FeaturedFoods>
-        </div>
-        <div className="flex justify-center mt-4">
-          <Link to="/available-foods">
-            <button className="btn bg-[#16a34a] hover:bg-[#076128ff] text-white">Show All</button>
-          </Link>
         </div>
       </section>
 

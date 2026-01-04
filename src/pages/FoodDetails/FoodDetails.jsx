@@ -14,7 +14,7 @@ const FoodDetails = () => {
   const [modal, setModal] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:3000/foods/${id}`)
+    fetch(`https://plate-share-server-eight.vercel.app/foods/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setFood(data);
@@ -83,7 +83,7 @@ const FoodDetails = () => {
       status: "pending",
     };
 
-    fetch("http://localhost:3000/requests", {
+    fetch("https://plate-share-server-eight.vercel.app/requests", {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -129,7 +129,7 @@ const FoodDetails = () => {
       status: "pending",
     };
 
-    fetch("http://localhost:3000/requests", {
+    fetch("https://plate-share-server-eight.vercel.app/requests", {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -167,7 +167,6 @@ const FoodDetails = () => {
       `,
         }}
       >
-        
         <figure className="lg:w-1/2 h-96">
           <img
             src={food_image}
@@ -248,10 +247,22 @@ const FoodDetails = () => {
         </button>
       </div>
 
+      {user?.email === donator_email && (
+        <div className="mt-12">
+          <h2 className="text-4xl text-center font-bold text-[#16a34a] mb-4">
+            Food Requests
+          </h2>
+
+          <FoodRequestsTable foodId={id} setFood={setFood} />
+        </div>
+      )}
+
       {modal && (
         <dialog open className="modal">
           <div className="modal-box">
-            <h3 className="text-xl text-[#16a34a] font-bold mb-3">Request This Food</h3>
+            <h3 className="text-xl text-[#16a34a] font-bold mb-3">
+              Request This Food
+            </h3>
 
             <form onSubmit={handleRequestSubmit} className="space-y-4">
               <div>
@@ -284,19 +295,194 @@ const FoodDetails = () => {
                 />
               </div>
 
-              <a onClick={handleFoodRequest} className="btn  bg-[#16a34a] hover:bg-[#076128ff] text-white w-full mt-3">
-                Submit Request
-              </a>
+              
             </form>
+            <button
+                onClick={handleFoodRequest}
+                className="btn  bg-[#16a34a] hover:bg-[#076128ff] text-white w-full mt-3"
+              >
+                Submit Request
+              </button>
 
             <div className="modal-action">
-              <button className="btn bg-red-500 text-white" onClick={() => setModal(false)}>
+              <button
+                className="btn bg-red-500 text-white"
+                onClick={() => setModal(false)}
+              >
                 Close
               </button>
             </div>
           </div>
         </dialog>
       )}
+    </div>
+  );
+};
+
+const FoodRequestsTable = ({ foodId, setFood }) => {
+  const [requests, setRequests] = useState([]);
+
+  useEffect(() => {
+    fetch(`https://plate-share-server-eight.vercel.app/requests/${foodId}`)
+      .then((res) => res.json())
+      .then((data) => setRequests(data));
+  }, [foodId]);
+
+  //     Swal.fire({
+  //       title: `Are you sure to ${status}?`,
+  //       icon: "warning",
+  //       showCancelButton: true,
+  //     }).then((result) => {
+  //       if (result.isConfirmed) {
+  //         fetch(`https://plate-share-server-eight.vercel.app/requests/update/${id}`, {
+  //           method: "PATCH",
+  //           headers: { "content-type": "application/json" },
+  //           body: JSON.stringify({ status }),
+  //         })
+  //           .then((res) => res.json())
+  //           .then((data) => {
+  //             if (data.modifiedCount > 0) {
+  //               Swal.fire("Updated!", `Request ${status}.`, "success");
+
+  //               setRequests((prev) =>
+  //                 prev.map((req) =>
+  //                   req._id === id ? { ...req, status } : req
+  //                 )
+  //               );
+
+  //               if (status === "accepted") {
+  //                 fetch(`https://plate-share-server-eight.vercel.app/foods/status/${foodId}`, {
+  //                   method: "PATCH",
+  //                   headers: { "content-type": "application/json" },
+  //                   body: JSON.stringify({ food_status: "donated" }),
+  //                 });
+  //               }
+  //             }
+  //           });
+  //       }
+  //     });
+  //   };
+
+  const handleAcceptRequest = (requestId) => {
+  fetch(
+    `https://plate-share-server-eight.vercel.app/requests/accept/${requestId}`,
+    { method: "PATCH" }
+  )
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        Swal.fire(
+          "Accepted!",
+          "Request accepted & food marked as donated.",
+          "success"
+        );
+        setRequests((prev) =>
+          prev.map((r) =>
+            r._id === requestId ? { ...r, status: "accepted" } : r
+          )
+        );
+        setFood((prev) => ({ ...prev, food_status: "Donated" }));
+      } else {
+        Swal.fire("Error!", data.message, "error");
+      }
+    })
+    .catch(() =>
+      Swal.fire("Error!", "Something went wrong. Please try again.", "error")
+    );
+};
+
+
+  const handleRejectRequest = (requestId) => {
+    fetch(
+      `https://plate-share-server-eight.vercel.app/requests/reject/${requestId}`,
+      {
+        method: "PATCH",
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.modifiedCount > 0) {
+          Swal.fire("Rejected!", "Request rejected.", "success");
+
+          setRequests((prev) =>
+            prev.map((r) =>
+              r._id === requestId ? { ...r, status: "rejected" } : r
+            )
+          );
+        }
+      })
+      .catch(() => Swal.fire("Error!", "Something went wrong.", "error"));
+  };
+
+  return (
+    <div className="overflow-x-auto border shadow-xl rounded-xl">
+      <table className="table">
+        <thead className="bg-green-200">
+          <tr>
+            <th>Requester</th>
+            <th>Location</th>
+            <th>Why Need</th>
+            <th>Contact</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {requests.map((req) => (
+            <tr className="" key={req._id}>
+              <td>
+                <div className="flex items-center gap-2">
+                  <img
+                    src={req.requesterImage}
+                    className="w-10 h-10 rounded-full"
+                  />
+                  <div>
+                    <h4 className="font-semibold">{req.requesterName}</h4>
+                    <p className="text-sm">{req.requesterEmail}</p>
+                  </div>
+                </div>
+              </td>
+
+              <td>{req.pickup_location}</td>
+              <td>{req.whyNeed}</td>
+              <td>{req.contactNumber}</td>
+
+              <td>
+                <span
+                  className={`badge ${
+                    req.status === "pending"
+                      ? "badge-warning"
+                      : req.status === "accepted"
+                      ? "badge-success"
+                      : "badge-error"
+                  }`}
+                >
+                  {req.status}
+                </span>
+              </td>
+
+              <td className="flex gap-2">
+                <button
+                  className="btn btn-success btn-sm"
+                  disabled={req.status !== "pending"}
+                  onClick={() => handleAcceptRequest(req._id)}
+                >
+                  Accept
+                </button>
+
+                <button
+                  className="btn btn-error btn-sm"
+                  disabled={req.status !== "pending"}
+                  onClick={() => handleRejectRequest(req._id)}
+                >
+                  Reject
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

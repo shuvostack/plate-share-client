@@ -3,6 +3,8 @@ import { AuthContext } from "../../contexts/AuthContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const MyFoodRequests = () => {
   const { user, loading } = useContext(AuthContext);
@@ -10,17 +12,24 @@ const MyFoodRequests = () => {
   const [fetching, setFetching] = useState(true);
   const navigate = useNavigate();
 
-  // Redirect if not logged in
+  
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      easing: "ease-in-out",
+      offset: 120,
+    });
+  }, []);
+
   useEffect(() => {
     if (!loading && !user) {
       navigate("/login");
     }
   }, [user, loading, navigate]);
 
-  // Fetch user-specific food requests
   useEffect(() => {
     if (user?.email) {
-      fetch(`http://localhost:3000/my-requests/${user.email}`)
+      fetch(`https://plate-share-server-eight.vercel.app/my-requests/${user.email}`)
         .then((res) => res.json())
         .then((data) => {
           setRequests(data);
@@ -32,7 +41,6 @@ const MyFoodRequests = () => {
 
   if (loading || fetching) return <LoadingSpinner />;
 
-  // Cancel request
   const handleCancel = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -44,7 +52,7 @@ const MyFoodRequests = () => {
       confirmButtonText: "Yes, cancel it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:3000/requests/${id}`, {
+        fetch(`https://plate-share-server-eight.vercel.app/requests/${id}`, {
           method: "DELETE",
         })
           .then((res) => res.json())
@@ -77,7 +85,8 @@ const MyFoodRequests = () => {
           {requests.map((req) => (
             <div
               key={req._id}
-              className="card bg-base-100 shadow-lg border rounded-xl"
+              data-aos="fade-up"  
+              className="card bg-base-100 shadow-xl rounded-xl"
             >
               <figure>
                 <img
@@ -108,7 +117,9 @@ const MyFoodRequests = () => {
                   />
                   <div>
                     <p className="font-medium">{req.donator_name}</p>
-                    <p className="text-sm text-gray-500">{req.donator_email}</p>
+                    <p className="text-sm text-gray-500">
+                      {req.donator_email}
+                    </p>
                   </div>
                 </div>
 
@@ -130,7 +141,7 @@ const MyFoodRequests = () => {
                 </p>
 
                 <button
-                  className="btn btn-error btn-sm mt-3"
+                  className="btn bg-red-500 text-white btn-sm mt-3"
                   onClick={() => handleCancel(req._id)}
                 >
                   Cancel Request

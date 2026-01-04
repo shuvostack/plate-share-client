@@ -7,7 +7,7 @@ import Banner from "./Banner";
 import HowItWorks from "./StaticSections/HowItWorks";
 import OurMission from "./StaticSections/OurMission";
 
-const featuredFoodsPromise = fetch("http://localhost:3000/featured-foods").then(
+const featuredFoodsPromise = fetch("https://plate-share-server-eight.vercel.app/featured-foods").then(
   (res) => res.json()
 );
 

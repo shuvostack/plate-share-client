@@ -1,37 +1,31 @@
 import React, { use } from "react";
 import FoodCard from "../../components/Shared/FoodCard";
-import { motion } from "framer-motion";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const FeaturedFoods = ({ featuredFoodsPromise }) => {
   const foods = use(featuredFoodsPromise);
 
+  React.useEffect(() => {
+    AOS.init({
+      duration: 800,
+      easing: "ease-out",
+      offset: 120,
+    });
+  }, []);
+
   return (
-    <motion.div 
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
-      initial="hidden"
-      animate="visible"
-      variants={{
-        hidden: { opacity: 0 },
-        visible: {
-          opacity: 1,
-          transition: { staggerChildren: 0.15 },
-        },
-      }}
-    >
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       {foods.map((food) => (
-        <motion.div
+        <div 
           key={food._id}
-          variants={{
-            hidden: { opacity: 0, y: 40 },
-            visible: { opacity: 1, y: 0 },
-          }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          whileHover={{ scale: 1.05 }}
+          data-aos="fade-up"
+          data-aos-delay="150"
         >
           <FoodCard food={food} />
-        </motion.div>
+        </div>
       ))}
-    </motion.div>
+    </div>
   );
 };
 

@@ -34,9 +34,9 @@ const OurMission = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-4xl font-bold mb-6 text-primary"
+          className="text-4xl font-bold mb-6"
         >
-          Our Mission
+          <span className="text-[#16a34a]">Our</span> Mission
         </motion.h2>
         <p className="text-gray-700 mb-10 max-w-2xl mx-auto">
           We believe in a world where no one sleeps hungry. PlateShare bridges

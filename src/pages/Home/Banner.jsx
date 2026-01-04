@@ -7,7 +7,7 @@ const Banner = () => {
   return (
     <div className="mt-7">
       <section className="relative bg-gradient-to-br from-primary/10 via-base-100 to-primary/5 overflow-hidden rounded-xl">
-        {/* Background Image */}
+        
         <div className="absolute inset-0">
           <img
             src="https://i.ibb.co/79L6c8V/pan-cakes.jpg"
@@ -19,13 +19,13 @@ const Banner = () => {
         {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent"></div>
 
-        {/* Content */}
+        
         <div className="relative container mx-auto px-6 lg:px-16 py-20 lg:py-32 flex flex-col lg:flex-row items-center justify-between gap-10">
-          {/* Left Text Section */}
+         
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7 }}
+            transition={{ duration: 2 }}
             className="text-white space-y-5 lg:w-1/2"
           >
             <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
@@ -53,11 +53,11 @@ const Banner = () => {
             </div>
           </motion.div>
 
-          {/* Right Image Section */}
+          
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 3 }}
             className="lg:w-1/2 flex justify-center relative"
           >
             <div className="relative">
@@ -66,7 +66,7 @@ const Banner = () => {
                 alt="Share Food Illustration"
                 className="w-[350px] lg:w-[480px] drop-shadow-2xl rounded-3xl"
               />
-              {/* Floating badge */}
+              
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}

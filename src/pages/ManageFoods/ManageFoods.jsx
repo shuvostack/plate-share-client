@@ -23,7 +23,9 @@ const ManageMyFoods = () => {
       const fetchFoods = async () => {
         try {
           setFetching(true);
-          const res = await fetch("http://localhost:3000/foods");
+          const res = await fetch(
+            "https://plate-share-server-eight.vercel.app/foods"
+          );
           const data = await res.json();
           const myFoods = data.filter(
             (food) => food.donator_email === user.email
@@ -52,7 +54,9 @@ const ManageMyFoods = () => {
     });
 
     if (confirm.isConfirmed) {
-      await fetch(`http://localhost:3000/foods/${id}`, { method: "DELETE" });
+      await fetch(`https://plate-share-server-eight.vercel.app/foods/${id}`, {
+        method: "DELETE",
+      });
 
       Swal.fire("Deleted!", "Food has been deleted.", "success");
 
@@ -60,7 +64,7 @@ const ManageMyFoods = () => {
     }
   };
 
-  // OPEN MODAL  
+  // OPEN MODAL
   const openUpdateModal = (food) => {
     setSelectedFood(food);
     document.getElementById("update_food_modal").showModal();
@@ -82,7 +86,7 @@ const ManageMyFoods = () => {
     };
 
     const res = await fetch(
-      `http://localhost:3000/foods/${selectedFood._id}`,
+      `https://plate-share-server-eight.vercel.app/foods/${selectedFood._id}`,
       {
         method: "PATCH",
         headers: { "content-type": "application/json" },
@@ -100,9 +104,7 @@ const ManageMyFoods = () => {
       // Update UI locally
       setFoods((prev) =>
         prev.map((food) =>
-          food._id === selectedFood._id
-            ? { ...food, ...updatedFood }
-            : food
+          food._id === selectedFood._id ? { ...food, ...updatedFood } : food
         )
       );
 
@@ -170,7 +172,6 @@ const ManageMyFoods = () => {
                   </tr>
                 ))}
               </tbody>
-
             </table>
           </div>
         )}
@@ -240,10 +241,19 @@ const ManageMyFoods = () => {
           )}
 
           <div className="modal-action">
-            <button className="btn bg-red-500 text-white" type="button" onClick={() => document.getElementById("update_food_modal").close()}>
+            <button
+              className="btn bg-red-500 text-white"
+              type="button"
+              onClick={() =>
+                document.getElementById("update_food_modal").close()
+              }
+            >
               Close
             </button>
-            <button className="btn bg-[#16a34a] hover:bg-[#076128ff] text-white" type="submit">
+            <button
+              className="btn bg-[#16a34a] hover:bg-[#076128ff] text-white"
+              type="submit"
+            >
               Save Changes
             </button>
           </div>

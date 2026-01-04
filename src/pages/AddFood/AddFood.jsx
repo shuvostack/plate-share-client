@@ -66,9 +66,9 @@ const AddFood = () => {
         donator_image: user.photoURL,
         food_status: "Available",
       };
-      console.log(newFood)
+    //   console.log(newFood)
       
-      const response = await fetch("http://localhost:3000/foods", {
+      const response = await fetch("https://plate-share-server-eight.vercel.app/foods", {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -77,7 +77,7 @@ const AddFood = () => {
       })
 
       const data = await response.json();
-      console.log('server response', data)
+    //   console.log('server response', data)
 
       if (data.insertedId) {
         Swal.fire({

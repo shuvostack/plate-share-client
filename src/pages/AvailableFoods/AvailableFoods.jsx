@@ -17,7 +17,7 @@ const AvailableFoods = () => {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:3000/foods")
+    fetch("https://plate-share-server-eight.vercel.app/foods")
       .then((res) => res.json())
       .then((data) => {
         setFoods(data);

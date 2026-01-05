@@ -6,6 +6,12 @@ import { Link } from "react-router";
 import Banner from "./Banner";
 import HowItWorks from "./StaticSections/HowItWorks";
 import OurMission from "./StaticSections/OurMission";
+import ImpactStats from "./ImpactStats";
+import Testimonials from "./Testimonials";
+import FaqSection from "./FaqSection";
+import Newsletter from "./Newsletter";
+import FoodTips from "./FoodTips";
+import WhyChooseUs from "./WhyChooseUs";
 
 const featuredFoodsPromise = fetch("https://plate-share-server-eight.vercel.app/featured-foods").then(
   (res) => res.json()
@@ -42,6 +48,36 @@ const Home = () => {
       {/* Our mission */}
       <div className="my-5 w-11/12 mx-auto">
         <OurMission></OurMission>
+      </div>
+
+      {/* Impact Stats */}
+      <div>
+        <ImpactStats></ImpactStats>
+      </div>
+
+      {/* Testimonials */}
+      <div>
+        <Testimonials></Testimonials>
+      </div>
+
+      {/* FAQ */}
+      <div>
+        <FaqSection></FaqSection>
+      </div>
+
+      {/* Newsletter */}
+      <div>
+        <Newsletter></Newsletter>
+      </div>
+
+      {/* Why Choose Us */}
+      <div>
+        <WhyChooseUs></WhyChooseUs>
+      </div>
+
+      {/* Food Tips */}
+      <div>
+        <FoodTips></FoodTips>
       </div>
     </div>
   );

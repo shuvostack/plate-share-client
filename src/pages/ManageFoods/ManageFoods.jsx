@@ -3,12 +3,13 @@ import { AuthContext } from "../../contexts/AuthContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
+import { Edit2, Trash2, MapPin, Calendar, Package, AlertCircle, X } from "lucide-react";
 
 const ManageMyFoods = () => {
   const { user, loading } = useContext(AuthContext);
   const [foods, setFoods] = useState([]);
   const [fetching, setFetching] = useState(true);
-  const [selectedFood, setSelectedFood] = useState(null); // 👈 For modal
+  const [selectedFood, setSelectedFood] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,12 +46,16 @@ const ManageMyFoods = () => {
   const handleDelete = async (id) => {
     const confirm = await Swal.fire({
       title: "Are you sure?",
-      text: "This food will be permanently deleted!",
+      text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#16a34a",
-      cancelButtonColor: "#d33",
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
       confirmButtonText: "Yes, delete it!",
+      background: "#fff",
+      customClass: {
+        popup: "rounded-2xl",
+      }
     });
 
     if (confirm.isConfirmed) {
@@ -58,19 +63,24 @@ const ManageMyFoods = () => {
         method: "DELETE",
       });
 
-      Swal.fire("Deleted!", "Food has been deleted.", "success");
+      Swal.fire({
+        title: "Deleted!",
+        text: "Your file has been deleted.",
+        icon: "success",
+        confirmButtonColor: "#16a34a",
+      });
 
       setFoods(foods.filter((food) => food._id !== id));
     }
   };
 
-  // OPEN MODAL
+  // Open modal
   const openUpdateModal = (food) => {
     setSelectedFood(food);
     document.getElementById("update_food_modal").showModal();
   };
 
-  // UPDATE HANDLER
+  // Update handler
   const handleUpdate = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -99,6 +109,7 @@ const ManageMyFoods = () => {
       Swal.fire({
         title: "Updated Successfully!",
         icon: "success",
+        confirmButtonColor: "#16a34a",
       });
 
       // Update UI locally
@@ -115,60 +126,126 @@ const ManageMyFoods = () => {
   if (loading || fetching) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen bg-base-200 py-16 px-4">
-      <div className="max-w-5xl mx-auto bg-base-100 shadow-lg rounded-2xl p-8">
-        <h2 className="text-3xl font-bold text-center text-[#16a34a] mb-8">
-          📝 Manage My Foods
-        </h2>
-
-        {foods.length === 0 ? (
-          <p className="text-center text-gray-500">
-            You haven't added any foods yet.
+    <div className="max-w-6xl mx-auto">
+      
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-800">
+            Manage <span className="text-[#16a34a]">Foods</span>
+          </h2>
+          <p className="text-gray-500 mt-1">
+            You have posted <span className="font-bold text-gray-800">{foods.length}</span> items so far.
           </p>
+        </div>
+        <button 
+          onClick={() => navigate("/dashboard/add-food")}
+          className="btn bg-[#16a34a] hover:bg-[#15803d] text-white rounded-xl border-none shadow-lg shadow-green-200"
+        >
+          + Add New Food
+        </button>
+      </div>
+
+      {/* Table Card */}
+      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        {foods.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+              <Package size={40} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-700">No Foods Added Yet</h3>
+            <p className="text-gray-500 mt-2">Start sharing your surplus food with the community.</p>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="table w-full">
-              <thead>
+              {/* Head */}
+              <thead className="bg-gray-50/50 text-gray-500 font-medium uppercase text-xs tracking-wider">
                 <tr>
-                  <th>Food</th>
+                  <th className="py-5 pl-8">Food Item</th>
                   <th>Quantity</th>
-                  <th>Pickup</th>
-                  <th>Expire</th>
+                  <th>Pickup Location</th>
+                  <th>Expire Date</th>
                   <th>Status</th>
-                  <th>Actions</th>
+                  <th className="text-right pr-8">Actions</th>
                 </tr>
               </thead>
-
-              <tbody>
+              
+              {/* Body */}
+              <tbody className="divide-y divide-gray-100">
                 {foods.map((food) => (
-                  <tr key={food._id}>
-                    <td className="flex items-center gap-3">
-                      <img
-                        src={food.food_image}
-                        className="w-14 h-14 rounded"
-                      />
-                      <span>{food.food_name}</span>
+                  <tr key={food._id} className="hover:bg-gray-50/50 transition-colors">
+                    
+                    {/* Food Info */}
+                    <td className="pl-8 py-4">
+                      <div className="flex items-center gap-4">
+                        <div className="avatar">
+                          <div className="w-14 h-14 rounded-xl shadow-sm">
+                            <img src={food.food_image} alt={food.food_name} />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="font-bold text-gray-800 text-base">{food.food_name}</div>
+                          <div className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full w-fit mt-1">
+                             ID: {food._id.slice(-6)}
+                          </div>
+                        </div>
+                      </div>
                     </td>
-                    <td>{food.food_quantity}</td>
-                    <td>{food.pickup_location}</td>
-                    <td>{food.expire_date}</td>
-                    <td>{food.food_status}</td>
 
-                    <td className="flex gap-2">
-                      <button
-                        className="btn btn-sm bg-[#16a34a] hover:bg-[#076128ff] text-white"
-                        onClick={() => openUpdateModal(food)}
-                      >
-                        Update
-                      </button>
-
-                      <button
-                        className="btn btn-sm bg-red-500 text-white"
-                        onClick={() => handleDelete(food._id)}
-                      >
-                        Delete
-                      </button>
+                    {/* Quantity */}
+                    <td className="font-medium text-gray-600">
+                      {food.food_quantity}
                     </td>
+
+                    {/* Location */}
+                    <td>
+                      <div className="flex items-center gap-2 text-gray-500 text-sm">
+                        <MapPin size={14} className="text-[#16a34a]" />
+                        {food.pickup_location}
+                      </div>
+                    </td>
+
+                    {/* Expire Date */}
+                    <td>
+                      <div className="flex items-center gap-2 text-gray-500 text-sm">
+                        <Calendar size={14} className="text-orange-500" />
+                        {food.expire_date}
+                      </div>
+                    </td>
+
+                    {/* Status Badge */}
+                    <td>
+                      <span className={`px-3 py-1.5 rounded-full text-xs font-bold capitalize flex items-center gap-1 w-fit ${
+                        food.food_status === 'available' 
+                          ? 'bg-green-100 text-green-700 border border-green-200' 
+                          : 'bg-yellow-100 text-yellow-700 border border-yellow-200'
+                      }`}>
+                        {food.food_status === 'available' && <span className="w-1.5 h-1.5 rounded-full bg-green-600"></span>}
+                        {food.food_status}
+                      </span>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="pr-8 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => openUpdateModal(food)}
+                          className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors tooltip tooltip-left"
+                          data-tip="Edit"
+                        >
+                          <Edit2 size={18} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(food._id)}
+                          className="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors tooltip tooltip-left"
+                          data-tip="Delete"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+
                   </tr>
                 ))}
               </tbody>
@@ -177,88 +254,103 @@ const ManageMyFoods = () => {
         )}
       </div>
 
-      {/* UPDATE MODAL */}
-      <dialog id="update_food_modal" className="modal">
+      {/* Modern Modal */}
+      <dialog id="update_food_modal" className="modal backdrop-blur-sm">
         <form
           method="dialog"
-          className="modal-box max-w-lg"
+          className="modal-box w-11/12 max-w-2xl bg-white rounded-3xl p-8 shadow-2xl relative"
           onSubmit={handleUpdate}
         >
-          <h3 className="text-xl font-bold text-[#16a34a] mb-4">
-            Update Food Details
+          {/* Close Button */}
+          <button 
+            type="button" 
+            onClick={() => document.getElementById("update_food_modal").close()}
+            className="absolute right-6 top-6 text-gray-400 hover:text-gray-600"
+          >
+            <X size={24} />
+          </button>
+
+          <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+            <Edit2 className="text-[#16a34a]" /> Update Food Listing
           </h3>
 
           {selectedFood && (
-            <>
-              <label className="label">Food Name</label>
-              <input
-                name="food_name"
-                defaultValue={selectedFood.food_name}
-                required
-                className="input input-bordered w-full"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              <div className="form-control">
+                <label className="label font-semibold text-gray-600">Food Name</label>
+                <input
+                  name="food_name"
+                  defaultValue={selectedFood.food_name}
+                  required
+                  className="input input-bordered rounded-xl bg-gray-50 focus:border-[#16a34a] focus:ring-0"
+                />
+              </div>
 
-              <label className="label">Food Image URL</label>
-              <input
-                name="food_image"
-                defaultValue={selectedFood.food_image}
-                required
-                className="input input-bordered w-full"
-              />
+              <div className="form-control">
+                <label className="label font-semibold text-gray-600">Food Image URL</label>
+                <input
+                  name="food_image"
+                  defaultValue={selectedFood.food_image}
+                  required
+                  className="input input-bordered rounded-xl bg-gray-50 focus:border-[#16a34a] focus:ring-0"
+                />
+              </div>
 
-              <label className="label">Quantity</label>
-              <input
-                name="food_quantity"
-                defaultValue={selectedFood.food_quantity}
-                required
-                className="input input-bordered w-full"
-              />
+              <div className="form-control">
+                <label className="label font-semibold text-gray-600">Quantity</label>
+                <input
+                  name="food_quantity"
+                  defaultValue={selectedFood.food_quantity}
+                  required
+                  className="input input-bordered rounded-xl bg-gray-50 focus:border-[#16a34a] focus:ring-0"
+                />
+              </div>
 
-              <label className="label">Pickup Location</label>
-              <input
-                name="pickup_location"
-                defaultValue={selectedFood.pickup_location}
-                required
-                className="input input-bordered w-full"
-              />
+              <div className="form-control">
+                <label className="label font-semibold text-gray-600">Pickup Location</label>
+                <input
+                  name="pickup_location"
+                  defaultValue={selectedFood.pickup_location}
+                  required
+                  className="input input-bordered rounded-xl bg-gray-50 focus:border-[#16a34a] focus:ring-0"
+                />
+              </div>
 
-              <label className="label">Expire Date</label>
-              <input
-                type="date"
-                name="expire_date"
-                defaultValue={selectedFood.expire_date}
-                required
-                className="input input-bordered w-full"
-              />
+              <div className="form-control">
+                <label className="label font-semibold text-gray-600">Expire Date</label>
+                <input
+                  type="date"
+                  name="expire_date"
+                  defaultValue={selectedFood.expire_date}
+                  required
+                  className="input input-bordered rounded-xl bg-gray-50 focus:border-[#16a34a] focus:ring-0"
+                />
+              </div>
 
-              <label className="label">Additional Notes</label>
-              <textarea
-                name="additional_notes"
-                defaultValue={selectedFood.additional_notes}
-                className="textarea textarea-bordered w-full"
-              ></textarea>
-            </>
+              <div className="form-control md:col-span-2">
+                <label className="label font-semibold text-gray-600">Additional Notes</label>
+                <textarea
+                  name="additional_notes"
+                  defaultValue={selectedFood.additional_notes}
+                  className="textarea textarea-bordered h-24 rounded-xl bg-gray-50 focus:border-[#16a34a] focus:ring-0"
+                ></textarea>
+              </div>
+
+            </div>
           )}
 
-          <div className="modal-action">
+          <div className="modal-action mt-8">
             <button
-              className="btn bg-red-500 text-white"
-              type="button"
-              onClick={() =>
-                document.getElementById("update_food_modal").close()
-              }
-            >
-              Close
-            </button>
-            <button
-              className="btn bg-[#16a34a] hover:bg-[#076128ff] text-white"
               type="submit"
+              className="btn bg-[#16a34a] hover:bg-[#15803d] text-white rounded-xl px-8 w-full md:w-auto"
             >
               Save Changes
             </button>
           </div>
         </form>
       </dialog>
+      
     </div>
   );
 };

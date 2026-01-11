@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import MainLayout from "../layouts/MainLayout";
-import DashboardLayout from "../layouts/DashboardLayout"; // গত স্টেপে আমরা এই লেআউটটা বানিয়েছিলাম
+import DashboardLayout from "../layouts/DashboardLayout";
 import ErrorPage from "../pages/ErrorPage/ErrorPage";
 import Home from "../pages/Home/Home";
 import AvailableFoods from "../pages/AvailableFoods/AvailableFoods";
@@ -11,11 +11,9 @@ import AddFood from "../pages/AddFood/AddFood";
 import ManageFoods from "../pages/ManageFoods/ManageFoods";
 import MyFoodRequests from "../pages/MyFoodRequests/MyFoodRequests";
 import FoodDetails from "../pages/FoodDetails/FoodDetails";
-
-// রিকোয়ারমেন্ট পূরণের জন্য এই দুটি নতুন পেজ বানাতে হবে।
-// আপাতত ফাইল না থাকলে এই দুটি লাইন কমেন্ট করে রেখো, পরে ফাইল বানিয়ে আনকমেন্ট করো।
 import About from "../pages/About/About"; 
 import Contact from "../pages/Contact/Contact";
+import DashboardOverview from "../pages/Dashboard/DashboardOverview";
 
 const router = createBrowserRouter([
   {
@@ -23,7 +21,7 @@ const router = createBrowserRouter([
     element: <MainLayout></MainLayout>,
     errorElement: <ErrorPage></ErrorPage>,
     children: [
-      // === Public Routes ===
+      // Public Routes
       {
         path: "/",
         element: <Home></Home>,
@@ -32,7 +30,7 @@ const router = createBrowserRouter([
         path: "/available-foods",
         element: <AvailableFoods></AvailableFoods>,
       },
-      // Requirement #8: Extra Pages
+  
       {
         path: "/about",
         element: <About></About>,
@@ -49,7 +47,7 @@ const router = createBrowserRouter([
         path: "/register",
         element: <Register></Register>,
       },
-      // Requirement #4: Details Page MUST be Public
+      
       {
         path: "/foods/:id",
         loader: ({ params }) =>
@@ -61,8 +59,7 @@ const router = createBrowserRouter([
     ],
   },
 
-  // === Dashboard Routes (Requirement #7) ===
-  // Private CRUD পেজগুলো এখন আলাদা লেআউটের আন্ডারে
+  // Dashboard Routes
   {
     path: "/dashboard",
     element: (
@@ -72,15 +69,19 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "add-food", // Link হবে: /dashboard/add-food
+        index: true,
+        element: <DashboardOverview></DashboardOverview>,
+      },
+      {
+        path: "add-food", 
         element: <AddFood></AddFood>,
       },
       {
-        path: "manage-my-foods", // Link হবে: /dashboard/manage-my-foods
+        path: "manage-my-foods", 
         element: <ManageFoods></ManageFoods>,
       },
       {
-        path: "my-food-requests", // Link হবে: /dashboard/my-food-requests
+        path: "my-food-requests", 
         element: <MyFoodRequests></MyFoodRequests>,
       },
     ],

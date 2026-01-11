@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router";
 import { FaBars, FaHome, FaUtensils, FaShoppingCart, FaPlusCircle, FaUser, FaSignOutAlt, FaTachometerAlt } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { AuthContext } from "../contexts/AuthContext";
+import { LayoutDashboard } from "lucide-react";
 
 const DashboardLayout = () => {
   const { user, logOut } = useContext(AuthContext); 
@@ -22,6 +23,22 @@ const DashboardLayout = () => {
   const menuItems = (
     <>
       {/* User */}
+      <li className="mb-2">
+        <NavLink
+          to="/dashboard/"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${
+              isActive
+                ? "bg-[#16a34a] text-white shadow-lg shadow-green-200"
+                : "text-gray-600 hover:bg-green-50 hover:text-[#16a34a]"
+            }`
+          }
+        >
+          <LayoutDashboard />
+          <span className="font-medium">Overview</span>
+        </NavLink>
+      </li>
+
       <li className="mb-2">
         <NavLink
           to="/dashboard/add-food"

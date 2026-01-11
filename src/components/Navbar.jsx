@@ -38,9 +38,9 @@ const Navbar = () => {
     <>
       <li><NavLink to="/" className={getNavLinkClass}>Home</NavLink></li>
       <li><NavLink to="/available-foods" className={getNavLinkClass}>Available Foods</NavLink></li>
-      {/* Added as per Requirement #8 */}
       <li><NavLink to="/about" className={getNavLinkClass}>About</NavLink></li>
       <li><NavLink to="/contact" className={getNavLinkClass}>Contact</NavLink></li>
+      <li><NavLink to="/dashboard" className={getNavLinkClass}>Dashboard</NavLink></li>
     </>
   );
 

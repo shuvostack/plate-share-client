@@ -70,7 +70,7 @@ const DashboardOverview = () => {
             </div>
           </div>
           <div className="mt-4 flex items-center gap-2 text-sm text-blue-600 bg-blue-50 w-fit px-2 py-1 rounded-lg">
-            <FaArrowUp size={12} /> <span>Data fetched from server</span>
+            <FaArrowUp size={12} /> <span>Added Food</span>
           </div>
         </div>
 

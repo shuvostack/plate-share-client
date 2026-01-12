@@ -2,7 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { AuthContext } from "../../contexts/AuthContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { CalendarDays, MapPin, PackageOpen, UserRound } from "lucide-react";
+import { 
+  CalendarDays, MapPin, PackageOpen, UserRound, ArrowLeft, HeartHandshake, 
+  Share2, CheckCircle, XCircle 
+} from "lucide-react";
 import Swal from "sweetalert2";
 
 const FoodDetails = () => {
@@ -33,10 +36,10 @@ const FoodDetails = () => {
   if (!food) {
     return (
       <div className="flex flex-col items-center justify-center h-[70vh]">
-        <h2 className="text-2xl font-semibold text-error">Food not found!</h2>
+        <h2 className="text-2xl font-bold text-red-500 mb-4">Food item not found!</h2>
         <button
           onClick={() => navigate(-1)}
-          className="btn btn-outline btn-primary mt-4"
+          className="btn bg-gray-800 text-white rounded-full px-8"
         >
           Go Back
         </button>
@@ -57,30 +60,27 @@ const FoodDetails = () => {
     food_status,
   } = food;
 
-  const handleFoodRequest = () => {
-    if (!user) {
-      return navigate("/login");
-    }
-
-    if (user.email === donator_email) {
-      return Swal.fire({
-        icon: "error",
-        title: "You cannot request your own food!",
-      });
-    }
+  // Request Submit Handler
+  const handleRequestSubmit = (e) => {
+    e.preventDefault();
+    const form = e.target;
 
     const requestData = {
       foodId: id,
       food_name,
       food_image,
-      donator_name,
-      donator_email,
+      pickup_location,
+      expire_date,
       requesterEmail: user.email,
       requesterName: user.displayName,
       requesterImage: user.photoURL,
-      pickup_location,
-      expire_date,
+      donator_email,
+      donator_name,
+      donator_image,
+      contactNumber: form.contact.value,
+      whyNeed: form.why.value,
       status: "pending",
+      requestDate: new Date().toISOString()
     };
 
     fetch("https://plate-share-server-eight.vercel.app/requests", {
@@ -94,231 +94,210 @@ const FoodDetails = () => {
       .then((data) => {
         if (data.insertedId) {
           Swal.fire({
-            icon: "success",
             title: "Request Sent!",
+            text: "Your request is pending approval.",
+            icon: "success",
+            confirmButtonColor: "#16a34a"
           });
-        }
-      })
-      .catch(() => {
-        Swal.fire({
-          icon: "error",
-          title: "Failed to send request!",
-        });
-      });
-  };
-
-  const handleRequestSubmit = (e) => {
-    e.preventDefault();
-
-    const form = e.target;
-
-    const requestData = {
-      foodId: id,
-      food_name,
-      food_image,
-      pickup_location,
-      expire_date,
-      requesterEmail: user.email,
-      requesterName: user.displayName,
-      requestPhoto: user.photoURL,
-      donator_email,
-      donator_name,
-      donator_image,
-      contactNumber: form.contact.value,
-      whyNeed: form.why.value,
-      status: "pending",
-    };
-
-    fetch("https://plate-share-server-eight.vercel.app/requests", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(requestData),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.insertedId) {
-          Swal.fire(
-            "Request Sent!",
-            "Your request is pending approval.",
-            "success"
-          );
           setModal(false);
         }
       });
   };
 
   return (
-    <div className="container w-11/12 mx-auto px-4 py-10">
-      <div
-        className="card lg:card-side  shadow-lg border border-green-500 p-5  rounded-2xl overflow-hidden flex items-center"
-        style={{
-          backgroundImage: `
-        linear-gradient(45deg, 
-          rgba(240,253,250,1) 0%, 
-          rgba(204,251,241,0.7) 30%, 
-          rgba(153,246,228,0.5) 60%, 
-          rgba(94,234,212,0.4) 100%
-        ),
-        radial-gradient(circle at 40% 30%, rgba(255,255,255,0.8) 0%, transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(167,243,208,0.5) 0%, transparent 50%),
-        radial-gradient(circle at 20% 80%, rgba(209,250,229,0.6) 0%, transparent 45%)
-      `,
-        }}
-      >
-        <figure className="lg:w-1/2 h-96">
-          <img
-            src={food_image}
-            alt={food_name}
-            className="w-full h-full object-cover"
-          />
-        </figure>
+    <div className="min-h-screen bg-gray-50 pb-20">
+      
+      {/* Hero Image */}
+      <div className="relative h-[400px] w-full">
+        <img 
+          src={food_image} 
+          alt={food_name} 
+          className="w-full h-full object-cover brightness-75"
+        />
+        <div className="absolute top-6 left-6 z-50">
+          <button 
+            onClick={() => navigate(-1)}
+            className="btn btn-circle bg-white/20 backdrop-blur-md border-none text-white hover:bg-white/40"
+          >
+            <ArrowLeft size={24} />
+          </button>
+        </div>
+        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-gray-50 to-transparent"></div>
+      </div>
 
-        <div className="card-body lg:w-1/2 space-y-4">
-          <h2 className="text-3xl font-bold text-[#16a34a]">{food_name}</h2>
-
-          <div className="flex flex-wrap gap-3 text-gray-700">
-            <p className="flex items-center gap-2">
-              <MapPin size={18} /> {pickup_location}
-            </p>
-            <p className="flex items-center gap-2">
-              <CalendarDays size={18} /> Exp: {expire_date}
-            </p>
-          </div>
-
-          <p className="text-gray-600 leading-relaxed">{additional_notes}</p>
-
-          <div className="mt-4 flex flex-col gap-2">
-            <p className="flex items-center gap-2">
-              <PackageOpen size={18} />
-              <span className="font-medium">Quantity:</span> {food_quantity}
-            </p>
-
-            <p>
-              <span className="font-medium">Status:</span>{" "}
-              <span
-                className={`badge ${
-                  food_status === "Available"
-                    ? "badge-success"
-                    : "badge-warning"
-                }`}
-              >
-                {food_status}
-              </span>
-            </p>
-          </div>
-
-          <div className="divider"></div>
-          <div className="flex items-center gap-3">
-            <img
-              src={donator_image}
-              alt={donator_name}
-              className="w-14 h-14 rounded-full object-cover border"
-            />
-            <div>
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <UserRound size={16} /> {donator_name}
-              </h3>
-              <p className="text-sm text-gray-500">{donator_email}</p>
+      {/* Main Content */}
+      <div className="container mx-auto px-4 -mt-24 relative z-10 max-w-6xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Left */}
+          <div className="lg:col-span-2 space-y-8">
+            
+            {/* Title Card */}
+            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                   <h1 className="text-4xl font-bold text-gray-800 mb-2">{food_name}</h1>
+                   <div className="flex items-center gap-4 text-gray-500">
+                      <span className="flex items-center gap-1"><MapPin size={16} className="text-[#16a34a]"/> {pickup_location}</span>
+                      <span className="flex items-center gap-1"><CalendarDays size={16} className="text-orange-500"/> Exp: {expire_date}</span>
+                   </div>
+                </div>
+                <span className={`px-4 py-2 rounded-full font-bold uppercase text-sm tracking-wide ${
+                  food_status === 'Available' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                }`}>
+                  {food_status}
+                </span>
+              </div>
             </div>
+
+            {/* Description Card */}
+            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+              <h3 className="text-xl font-bold text-gray-800 mb-4 border-l-4 border-[#16a34a] pl-3">Overview</h3>
+              <p className="text-gray-600 leading-relaxed text-lg">{additional_notes}</p>
+              
+              <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-6">
+                 <div className="bg-gray-50 p-4 rounded-xl text-center">
+                    <PackageOpen className="mx-auto text-[#16a34a] mb-2" size={24}/>
+                    <p className="text-sm text-gray-500 font-bold uppercase">Quantity</p>
+                    <p className="text-lg font-bold text-gray-800">{food_quantity}</p>
+                 </div>
+                 <div className="bg-gray-50 p-4 rounded-xl text-center">
+                    <UserRound className="mx-auto text-blue-500 mb-2" size={24}/>
+                    <p className="text-sm text-gray-500 font-bold uppercase">Donor Type</p>
+                    <p className="text-lg font-bold text-gray-800">Individual</p>
+                 </div>
+                 <div className="bg-gray-50 p-4 rounded-xl text-center">
+                    <Share2 className="mx-auto text-purple-500 mb-2" size={24}/>
+                    <p className="text-sm text-gray-500 font-bold uppercase">Share</p>
+                    <p className="text-lg font-bold text-gray-800">Public</p>
+                 </div>
+              </div>
+            </div>
+
+            {/* Requests Table */}
+            {user?.email === donator_email && (
+              <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                  <HeartHandshake className="text-[#16a34a]" /> Manage Requests
+                </h3>
+                <FoodRequestsTable foodId={id} setFood={setFood} />
+              </div>
+            )}
+
           </div>
 
-          <div className="mt-6">
-            <button
-              className="btn bg-[#16a34a] text-white w-full"
-              onClick={() => setModal(true)}
-              disabled={food_status !== "Available"}
-            >
-              {food_status === "Available"
-                ? "Request This Food"
-                : "Already Donated"}
-            </button>
+          {/* Right */}
+          <div className="lg:col-span-1 space-y-6">
+            
+            {/* Donor Profile */}
+            <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 text-center relative overflow-hidden">
+               <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-green-50 to-green-100"></div>
+               <div className="relative z-10">
+                  <img 
+                    src={donator_image} 
+                    alt={donator_name} 
+                    className="w-24 h-24 rounded-full border-4 border-white shadow-md mx-auto mb-4 object-cover"
+                  />
+                  <h3 className="text-xl font-bold text-gray-800">{donator_name}</h3>
+                  <p className="text-gray-500 text-sm mb-6">{donator_email}</p>
+                  
+                  <div className="divider text-xs text-gray-400 font-bold">CONTACT INFO</div>
+                  
+                  <button 
+                    onClick={() => setModal(true)}
+                    disabled={food_status !== "Available" || user?.email === donator_email}
+                    className="btn bg-[#16a34a] hover:bg-[#15803d] text-white w-full rounded-xl h-12 text-lg shadow-lg shadow-green-200"
+                  >
+                    {food_status === "Available" ? "Request This Food" : "Unavailable"}
+                  </button>
+                  
+                  {user?.email === donator_email && (
+                    <p className="text-red-500 text-xs mt-3 font-bold">You cannot request your own food.</p>
+                  )}
+               </div>
+            </div>
+
+            {/* Safety Tips */}
+            <div className="bg-blue-50 rounded-3xl p-6 border border-blue-100">
+               <h4 className="font-bold text-blue-800 mb-2">Safety First! 🛡️</h4>
+               <p className="text-sm text-blue-600">
+                 Always meet in a public place. Check food freshness before consuming.
+               </p>
+            </div>
+
           </div>
+
         </div>
       </div>
 
-      <div className="text-center mt-6">
-        <button
-          onClick={() => navigate(-1)}
-          className="btn bg-[#16a34a] hover:bg-[#076128ff] text-white btn-sm "
-        >
-          ← Go Back
-        </button>
-      </div>
-
-      {user?.email === donator_email && (
-        <div className="mt-12">
-          <h2 className="text-4xl text-center font-bold text-[#16a34a] mb-4">
-            Food Requests
-          </h2>
-
-          <FoodRequestsTable foodId={id} setFood={setFood} />
-        </div>
-      )}
-
+      {/* Modal */}
       {modal && (
-        <dialog open className="modal">
-          <div className="modal-box">
-            <h3 className="text-xl text-[#16a34a] font-bold mb-3">
-              Request This Food
+        <dialog open className="modal backdrop-blur-sm bg-black/30">
+          <div className="modal-box bg-white rounded-3xl p-8 max-w-md shadow-2xl">
+            <h3 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">
+              Request Food
             </h3>
 
-            <form onSubmit={handleRequestSubmit} className="space-y-4">
-              <div>
-                <label className="font-semibold">Write Location</label>
-                <input
-                  type="text"
-                  name="location"
-                  className="input input-bordered w-full"
-                  required
-                />
+            <form onSubmit={handleRequestSubmit} className="space-y-5">
+              <div className="form-control">
+                <label className="label font-bold text-gray-600">Pickup Location</label>
+                <div className="relative">
+                  <MapPin className="absolute left-4 top-3.5 text-gray-400" size={18}/>
+                  <input
+                    type="text"
+                    name="location"
+                    defaultValue={pickup_location} 
+                    className="input input-bordered w-full pl-10 rounded-xl bg-gray-50"
+                    required
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="font-semibold">Why Need Food</label>
+              <div className="form-control">
+                <label className="label font-bold text-gray-600">Why do you need this?</label>
                 <textarea
                   name="why"
                   rows="3"
-                  className="textarea textarea-bordered w-full"
+                  className="textarea textarea-bordered w-full rounded-xl bg-gray-50"
+                  placeholder="Briefly explain..."
                   required
                 ></textarea>
               </div>
 
-              <div>
-                <label className="font-semibold">Contact Number</label>
+              <div className="form-control">
+                <label className="label font-bold text-gray-600">Contact Number</label>
                 <input
                   type="text"
                   name="contact"
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full rounded-xl bg-gray-50"
+                  placeholder="+880 1..."
                   required
                 />
               </div>
 
-              
-            </form>
-            <button
-                onClick={handleFoodRequest}
-                className="btn  bg-[#16a34a] hover:bg-[#076128ff] text-white w-full mt-3"
-              >
-                Submit Request
-              </button>
-
-            <div className="modal-action">
               <button
-                className="btn bg-red-500 text-white"
-                onClick={() => setModal(false)}
+                type="submit"
+                className="btn bg-[#16a34a] hover:bg-[#15803d] text-white w-full rounded-xl mt-4"
               >
-                Close
+                Confirm Request
               </button>
-            </div>
+            </form>
+
+            <button
+              className="btn btn-sm btn-circle btn-ghost absolute right-4 top-4"
+              onClick={() => setModal(false)}
+            >
+              ✕
+            </button>
           </div>
         </dialog>
       )}
+
     </div>
   );
 };
 
+// Food Requests Table
 const FoodRequestsTable = ({ foodId, setFood }) => {
   const [requests, setRequests] = useState([]);
 
@@ -328,156 +307,71 @@ const FoodRequestsTable = ({ foodId, setFood }) => {
       .then((data) => setRequests(data));
   }, [foodId]);
 
-  //     Swal.fire({
-  //       title: `Are you sure to ${status}?`,
-  //       icon: "warning",
-  //       showCancelButton: true,
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         fetch(`https://plate-share-server-eight.vercel.app/requests/update/${id}`, {
-  //           method: "PATCH",
-  //           headers: { "content-type": "application/json" },
-  //           body: JSON.stringify({ status }),
-  //         })
-  //           .then((res) => res.json())
-  //           .then((data) => {
-  //             if (data.modifiedCount > 0) {
-  //               Swal.fire("Updated!", `Request ${status}.`, "success");
-
-  //               setRequests((prev) =>
-  //                 prev.map((req) =>
-  //                   req._id === id ? { ...req, status } : req
-  //                 )
-  //               );
-
-  //               if (status === "accepted") {
-  //                 fetch(`https://plate-share-server-eight.vercel.app/foods/status/${foodId}`, {
-  //                   method: "PATCH",
-  //                   headers: { "content-type": "application/json" },
-  //                   body: JSON.stringify({ food_status: "donated" }),
-  //                 });
-  //               }
-  //             }
-  //           });
-  //       }
-  //     });
-  //   };
-
   const handleAcceptRequest = (requestId) => {
-  fetch(
-    `https://plate-share-server-eight.vercel.app/requests/accept/${requestId}`,
-    { method: "PATCH" }
-  )
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.success) {
-        Swal.fire(
-          "Accepted!",
-          "Request accepted & food marked as donated.",
-          "success"
-        );
-        setRequests((prev) =>
-          prev.map((r) =>
-            r._id === requestId ? { ...r, status: "accepted" } : r
-          )
-        );
-        setFood((prev) => ({ ...prev, food_status: "Donated" }));
-      } else {
-        Swal.fire("Error!", data.message, "error");
-      }
-    })
-    .catch(() =>
-      Swal.fire("Error!", "Something went wrong. Please try again.", "error")
-    );
-};
-
+    fetch(`https://plate-share-server-eight.vercel.app/requests/accept/${requestId}`, { method: "PATCH" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          Swal.fire("Accepted!", "Food marked as donated.", "success");
+          setRequests((prev) => prev.map((r) => r._id === requestId ? { ...r, status: "accepted" } : r));
+          setFood((prev) => ({ ...prev, food_status: "Donated" }));
+        }
+      });
+  };
 
   const handleRejectRequest = (requestId) => {
-    fetch(
-      `https://plate-share-server-eight.vercel.app/requests/reject/${requestId}`,
-      {
-        method: "PATCH",
-      }
-    )
+    fetch(`https://plate-share-server-eight.vercel.app/requests/reject/${requestId}`, { method: "PATCH" })
       .then((res) => res.json())
       .then((data) => {
         if (data.modifiedCount > 0) {
-          Swal.fire("Rejected!", "Request rejected.", "success");
-
-          setRequests((prev) =>
-            prev.map((r) =>
-              r._id === requestId ? { ...r, status: "rejected" } : r
-            )
-          );
+          Swal.fire("Rejected!", "Request rejected.", "info");
+          setRequests((prev) => prev.map((r) => r._id === requestId ? { ...r, status: "rejected" } : r));
         }
-      })
-      .catch(() => Swal.fire("Error!", "Something went wrong.", "error"));
+      });
   };
 
+  if (requests.length === 0) return <p className="text-gray-500 italic">No requests received yet.</p>;
+
   return (
-    <div className="overflow-x-auto border shadow-xl rounded-xl">
-      <table className="table">
-        <thead className="bg-green-200">
+    <div className="overflow-x-auto">
+      <table className="table w-full">
+        <thead className="bg-gray-50 text-gray-500 font-bold uppercase text-xs">
           <tr>
             <th>Requester</th>
-            <th>Location</th>
-            <th>Why Need</th>
+            <th>Notes</th>
             <th>Contact</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
-
         <tbody>
           {requests.map((req) => (
-            <tr className="" key={req._id}>
+            <tr key={req._id} className="hover:bg-gray-50">
               <td>
-                <div className="flex items-center gap-2">
-                  <img
-                    src={req.requesterImage}
-                    className="w-10 h-10 rounded-full"
-                  />
+                <div className="flex items-center gap-3">
+                  <img src={req.requesterImage} alt="User" className="w-10 h-10 rounded-full border" />
                   <div>
-                    <h4 className="font-semibold">{req.requesterName}</h4>
-                    <p className="text-sm">{req.requesterEmail}</p>
+                    <div className="font-bold text-gray-800">{req.requesterName}</div>
+                    <div className="text-xs text-gray-500">{req.requesterEmail}</div>
                   </div>
                 </div>
               </td>
-
-              <td>{req.pickup_location}</td>
-              <td>{req.whyNeed}</td>
-              <td>{req.contactNumber}</td>
-
+              <td className="max-w-xs truncate text-gray-600" title={req.whyNeed}>{req.whyNeed}</td>
+              <td className="font-mono text-gray-600">{req.contactNumber}</td>
               <td>
-                <span
-                  className={`badge ${
-                    req.status === "pending"
-                      ? "badge-warning"
-                      : req.status === "accepted"
-                      ? "badge-success"
-                      : "badge-error"
-                  }`}
-                >
+                <span className={`badge border-none font-bold text-white ${
+                  req.status === 'accepted' ? 'bg-green-500' : req.status === 'rejected' ? 'bg-red-500' : 'bg-yellow-500'
+                }`}>
                   {req.status}
                 </span>
               </td>
-
               <td className="flex gap-2">
-                <button
-                  className="btn btn-success btn-sm"
-                  disabled={req.status !== "pending"}
-                  onClick={() => handleAcceptRequest(req._id)}
-                >
-                  Accept
-                </button>
-
-                <button
-                  className="btn btn-error btn-sm"
-                  disabled={req.status !== "pending"}
-                  onClick={() => handleRejectRequest(req._id)}
-                >
-                  Reject
-                </button>
+                {req.status === 'pending' && (
+                  <>
+                    <button onClick={() => handleAcceptRequest(req._id)} className="btn btn-xs bg-green-100 text-green-700 hover:bg-green-200 border-none"><CheckCircle size={14}/> Accept</button>
+                    <button onClick={() => handleRejectRequest(req._id)} className="btn btn-xs bg-red-100 text-red-700 hover:bg-red-200 border-none"><XCircle size={14}/> Reject</button>
+                  </>
+                )}
               </td>
             </tr>
           ))}

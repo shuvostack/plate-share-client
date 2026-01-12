@@ -25,7 +25,8 @@ const DashboardLayout = () => {
       {/* User */}
       <li className="mb-2">
         <NavLink
-          to="/dashboard/"
+          to="/dashboard"
+          end
           className={({ isActive }) =>
             `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${
               isActive

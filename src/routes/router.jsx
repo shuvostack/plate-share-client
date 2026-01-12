@@ -14,6 +14,7 @@ import FoodDetails from "../pages/FoodDetails/FoodDetails";
 import About from "../pages/About/About"; 
 import Contact from "../pages/Contact/Contact";
 import DashboardOverview from "../pages/Dashboard/DashboardOverview";
+import Profile from "../pages/Dashboard/Profile";
 
 const router = createBrowserRouter([
   {
@@ -83,6 +84,10 @@ const router = createBrowserRouter([
       {
         path: "my-food-requests", 
         element: <MyFoodRequests></MyFoodRequests>,
+      },
+      {
+        path: "profile", 
+        element: <Profile></Profile>,
       },
     ],
   },

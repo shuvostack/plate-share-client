@@ -74,7 +74,7 @@ const AvailableFoods = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen py-16">
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="container mx-auto px-4 py-16 max-w-7xl">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
@@ -83,7 +83,7 @@ const AvailableFoods = () => {
               Available <span className="text-[#16a34a]">Foods</span>
             </h2>
             <p className="text-gray-500 max-w-lg">
-              Browse fresh meals shared by our community. Showing page {currentPage} of {totalPages}.
+              Browse fresh meals shared by our community. page {currentPage} of {totalPages}.
             </p>
           </div>
 
